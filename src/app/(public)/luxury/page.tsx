@@ -1,0 +1,29 @@
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+
+export default function LuxuryPage() {
+  return (
+    <div className="container py-10">
+      <h1 className="text-4xl font-bold mb-8">Luxury Properties</h1>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-lg border bg-card shadow-sm">
+            <div className="aspect-video w-full bg-muted rounded-t-lg flex items-center justify-center">
+              <span className="text-muted-foreground">Luxury Image {i}</span>
+            </div>
+            <div className="p-6">
+              <h3 className="font-semibold text-xl">Penthouse {i}</h3>
+              <p className="text-sm text-muted-foreground mt-2">123 Example Street, NY</p>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="font-bold text-lg">${5000000 + i * 500000}</span>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/properties/penthouse-${i}`}>Details</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
