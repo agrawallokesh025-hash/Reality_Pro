@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import Link from "next/link"
-import { signup, registerSchema } from "@/actions/auth"
+import { signup } from "@/actions/auth"
+import { registerSchema } from "@/lib/validations/auth"
 
 import { Button } from "@/components/ui/button"
 import {

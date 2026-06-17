@@ -1,0 +1,16 @@
+{
+  "company_name": "Realty Pro",
+  "tagline": "Futuristic Real Estate Brokerage",
+  "contact_email": "contact@realtypro.example.com",
+  "contact_phone": "+1 (555) 019-9000",
+  "office_address": "888 Cyberpunk Blvd, San Francisco, CA 94103",
+  "facebook_url": "https://facebook.com/realtypro",
+  "twitter_url": "https://twitter.com/realtypro",
+  "instagram_url": "https://instagram.com/realtypro",
+  "linkedin_url": "https://linkedin.com/company/realtypro",
+  "seo_title_suffix": "Realty Pro",
+  "seo_meta_description": "Find futuristic glass villas, minimalist smart homes, and luxury commercial tech hubs.",
+  "seo_keywords": "real estate, cyberpunk, futuristic, smart home, villa, luxury suite",
+  "whatsapp_number": "+15550199000",
+  "whatsapp_template": "Hello! I am interested in property '[title]' (ID: [id]). Link: [url]"
+}

@@ -35,7 +35,8 @@ export async function updateSession(request: NextRequest) {
   // If user accesses dashboard without session, redirect to login
   const isDashboard = request.nextUrl.pathname.startsWith('/user') || 
                       request.nextUrl.pathname.startsWith('/seller') || 
-                      request.nextUrl.pathname.startsWith('/admin')
+                      request.nextUrl.pathname.startsWith('/admin') ||
+                      request.nextUrl.pathname.startsWith('/dashboard')
 
   if (!user && isDashboard) {
     const url = request.nextUrl.clone()
