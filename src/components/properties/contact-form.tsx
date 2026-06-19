@@ -47,27 +47,24 @@ export function ContactForm({
   }
 
   return (
-    <div className="relative group w-full bg-slate-900/60 p-6 rounded-2xl border border-slate-800 backdrop-blur-md font-mono text-sm">
-      {/* Outer Glow */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 rounded-2xl blur opacity-30 group-hover:opacity-40 transition" />
-
-      <div className="relative space-y-6">
+    <div className="relative w-full bg-card p-6 rounded-2xl border border-border/60 shadow-md font-sans text-sm text-foreground">
+      <div className="space-y-6">
         <div>
-          <h3 className="text-base font-bold text-sky-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-2 flex items-center gap-2">
-            <Send className="h-4 w-4" />
-            Contact Agent
+          <h3 className="text-base font-serif font-light text-foreground uppercase tracking-wider border-b border-border/50 pb-2 mb-2 flex items-center gap-2">
+            <Send className="h-4 w-4 text-accent" />
+            Confidential Inquiry
           </h3>
-          <p className="text-xs text-slate-400 font-sans">
-            Inquire about this estate. All communications are logged securely.
+          <p className="text-xs text-muted-foreground font-sans font-light">
+            Register your interest. All communications are strictly confidential.
           </p>
         </div>
 
         {/* Display Success State */}
         {state.success === true ? (
-          <div className="flex flex-col items-center justify-center p-6 text-center space-y-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-            <CheckCircle2 className="h-10 w-10 text-emerald-400 animate-bounce" />
-            <h4 className="font-bold text-emerald-400 uppercase tracking-wide">INQUIRY SENT</h4>
-            <p className="text-xs text-slate-300 font-sans max-w-[200px]">
+          <div className="flex flex-col items-center justify-center p-6 text-center space-y-3 bg-accent/10 border border-accent/20 rounded-xl">
+            <CheckCircle2 className="h-10 w-10 text-accent animate-bounce" />
+            <h4 className="font-serif font-medium text-accent uppercase tracking-wide text-xs">INQUIRY RECEIVED</h4>
+            <p className="text-xs text-muted-foreground font-sans font-light">
               {state.message}
             </p>
           </div>
@@ -77,7 +74,7 @@ export function ContactForm({
 
             {/* Error Message banner */}
             {state.success === false && (
-              <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs">
+              <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-xs">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>{state.message}</span>
               </div>
@@ -85,60 +82,64 @@ export function ContactForm({
 
             {/* Name */}
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase tracking-wider">Your Name</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium" htmlFor="inquiry-name">Your Name</label>
               <input
+                id="inquiry-name"
                 type="text"
                 name="name"
                 required
-                className="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-lg px-3 py-2 text-xs text-white outline-none transition"
-                placeholder="e.g. John Doe"
+                className="w-full bg-muted/30 border border-border hover:border-accent focus:border-accent rounded-lg px-3 py-2 text-xs text-foreground outline-none transition"
+                placeholder="John Doe"
               />
               {state.errors?.name && (
-                <p className="text-[10px] text-rose-400 mt-1">{state.errors.name[0]}</p>
+                <p className="text-[10px] text-destructive mt-1">{state.errors.name[0]}</p>
               )}
             </div>
 
             {/* Email */}
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase tracking-wider">Email Address</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium" htmlFor="inquiry-email">Email Address</label>
               <input
+                id="inquiry-email"
                 type="email"
                 name="email"
                 required
-                className="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-lg px-3 py-2 text-xs text-white outline-none transition"
-                placeholder="e.g. john@domain.com"
+                className="w-full bg-muted/30 border border-border hover:border-accent focus:border-accent rounded-lg px-3 py-2 text-xs text-foreground outline-none transition"
+                placeholder="john@example.com"
               />
               {state.errors?.email && (
-                <p className="text-[10px] text-rose-400 mt-1">{state.errors.email[0]}</p>
+                <p className="text-[10px] text-destructive mt-1">{state.errors.email[0]}</p>
               )}
             </div>
 
             {/* Phone */}
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase tracking-wider">Phone Number (Optional)</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium" htmlFor="inquiry-phone">Phone Number (Optional)</label>
               <input
+                id="inquiry-phone"
                 type="tel"
                 name="phone"
-                className="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-lg px-3 py-2 text-xs text-white outline-none transition"
-                placeholder="e.g. +1 555-0199"
+                className="w-full bg-muted/30 border border-border hover:border-accent focus:border-accent rounded-lg px-3 py-2 text-xs text-foreground outline-none transition"
+                placeholder="+1 (555) 000-0000"
               />
               {state.errors?.phone && (
-                <p className="text-[10px] text-rose-400 mt-1">{state.errors.phone[0]}</p>
+                <p className="text-[10px] text-destructive mt-1">{state.errors.phone[0]}</p>
               )}
             </div>
 
             {/* Message */}
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 uppercase tracking-wider">Message</label>
+              <label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium" htmlFor="inquiry-message">Message</label>
               <textarea
+                id="inquiry-message"
                 name="message"
                 required
                 rows={4}
-                className="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-sky-500 rounded-lg px-3 py-2 text-xs text-white outline-none transition resize-none"
-                placeholder={`Hello, I am interested in this property and would like to schedule a visit...`}
+                className="w-full bg-muted/30 border border-border hover:border-accent focus:border-accent rounded-lg px-3 py-2 text-xs text-foreground outline-none transition resize-none"
+                placeholder="I am interested in this estate and would like to arrange a private viewing..."
               />
               {state.errors?.message && (
-                <p className="text-[10px] text-rose-400 mt-1">{state.errors.message[0]}</p>
+                <p className="text-[10px] text-destructive mt-1">{state.errors.message[0]}</p>
               )}
             </div>
 
@@ -146,16 +147,16 @@ export function ContactForm({
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold flex items-center justify-center gap-2 text-xs py-2 rounded-lg transition"
+              className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-medium flex items-center justify-center gap-2 text-xs py-5 rounded-lg transition cursor-pointer"
             >
               {isPending ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Sending Request...
+                  Registering Interest...
                 </>
               ) : (
                 <>
-                  <Send className="h-3.5 w-3.5" />
+                  <Send className="h-3.5 w-3.5 text-accent" />
                   Submit Inquiry
                 </>
               )}
@@ -164,18 +165,18 @@ export function ContactForm({
         )}
 
         {/* Alternate Direct Connect */}
-        <div className="border-t border-slate-800 pt-4 text-center space-y-2">
-          <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Or Direct Hotlink</span>
+        <div className="border-t border-border/40 pt-4 text-center space-y-2">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider block mb-1">Direct Connection</span>
           {sellerPhone && (
             <Button
               variant="outline"
               size="sm"
               asChild
-              className="w-full text-xs border-sky-500/20 text-sky-400 hover:bg-sky-500/5 hover:text-sky-300"
+              className="w-full text-xs border-border text-foreground hover:bg-muted"
             >
               <a href={`tel:${sellerPhone}`} className="flex items-center justify-center gap-2">
-                <Phone className="h-3.5 w-3.5" />
-                Initialize Call Connection
+                <Phone className="h-3.5 w-3.5 text-accent" />
+                Call Agent
               </a>
             </Button>
           )}
@@ -184,7 +185,7 @@ export function ContactForm({
               variant="outline"
               size="sm"
               asChild
-              className="w-full text-xs border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/5 hover:text-emerald-300"
+              className="w-full text-xs border-accent/30 text-accent hover:bg-accent/10"
             >
               <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                 <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

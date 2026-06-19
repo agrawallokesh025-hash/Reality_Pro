@@ -1,203 +1,183 @@
 "use client"
 
 import * as React from "react"
-import { motion, useMotionValue, useTransform } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Sparkles, ArrowRight, ShieldCheck, Zap, Layers } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Search, MapPin, Home, DollarSign, ArrowRight, ShieldCheck } from "lucide-react"
 
 export function Hero3D() {
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const [location, setLocation] = React.useState("")
+  const [type, setType] = React.useState("")
+  const [priceRange, setPriceRange] = React.useState("")
+  const [InteractiveVilla, setInteractiveVilla] = React.useState<React.ComponentType<any> | null>(null)
 
-  // Motion values for tracking cursor position
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-
-  // Map coordinate offset to 3D rotation angles (-12 to 12 degrees)
-  const rotateX = useTransform(y, [-300, 300], [12, -12])
-  const rotateY = useTransform(x, [-300, 300], [-12, 12])
-
-  // Parallax displacement values for the futuristic background grid
-  const gridX = useTransform(x, [-300, 300], [-25, 25])
-  const gridY = useTransform(y, [-300, 300], [-25, 25])
-
-  // Glare effect coordinates (0% to 100%)
-  const glareX = useTransform(x, [-200, 200], [100, 0])
-  const glareY = useTransform(y, [-200, 200], [100, 0])
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const width = rect.width
-    const height = rect.height
-    // Get mouse cursor position relative to the center of the viewport container
-    const mouseX = event.clientX - rect.left - width / 2
-    const mouseY = event.clientY - rect.top - height / 2
-    x.set(mouseX)
-    y.set(mouseY)
-  }
-
-  const handleMouseLeave = () => {
-    // Smoothly animate back to center
-    x.set(0)
-    y.set(0)
+  React.useEffect(() => {
+    import("./interactive-villa").then((mod) => {
+      setInteractiveVilla(() => mod.InteractiveVilla)
+    })
+  }, [])
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (location) params.set("location", location)
+    if (type) params.set("type", type)
+    
+    if (priceRange) {
+      if (priceRange === "1m") {
+        params.set("maxPrice", "1000000")
+      } else if (priceRange === "1m-5m") {
+        params.set("minPrice", "1000000")
+        params.set("maxPrice", "5000000")
+      } else if (priceRange === "5m-10m") {
+        params.set("minPrice", "5000000")
+        params.set("maxPrice", "10000000")
+      } else if (priceRange === "10m") {
+        params.set("minPrice", "10000000")
+      }
+    }
+    
+    router.push(`/buy?${params.toString()}`)
   }
 
   return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative min-h-[700px] flex items-center overflow-hidden bg-black text-white py-16 px-4 md:px-8 border-b border-white/10"
-    >
-      {/* 3D Holographic Grid Background */}
-      <motion.div
-        style={{
-          x: gridX,
-          y: gridY,
-          backgroundImage:
-            "linear-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(14, 165, 233, 0.15) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-        className="absolute inset-0 pointer-events-none opacity-40 z-0 mask-radial"
-      />
-
-      {/* Cybernetic Radial Glows */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
-
-      <div className="container mx-auto grid md:grid-cols-12 gap-12 items-center relative z-10">
+    <div className="relative min-h-[85vh] flex items-center overflow-hidden bg-background py-12 md:py-20 px-4 md:px-8 border-b border-border/40">
+      {/* Background Soft Textures */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(194,169,126,0.04),transparent_70%)] pointer-events-none" />
+      
+      <div className="container mx-auto grid lg:grid-cols-12 gap-12 items-center relative z-10">
+        
         {/* Left Section: Content */}
-        <div className="md:col-span-7 space-y-8 text-left">
-          <div className="inline-flex items-center gap-2 bg-sky-500/10 border border-sky-500/30 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-sky-400 uppercase">
-            <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-            Next-Gen Real Estate Platform
+        <div className="lg:col-span-7 space-y-8 text-left">
+          
+          <div className="inline-flex items-center gap-2 bg-secondary text-primary dark:bg-primary/40 dark:text-accent px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase">
+            <ShieldCheck className="h-3.5 w-3.5 text-accent animate-pulse" />
+            Bespoke Architectural Brokerage
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-none">
-            Find Your <span className="bg-gradient-to-r from-sky-400 via-cyan-400 to-indigo-500 bg-clip-text text-transparent">Digital</span> Dream Home
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-light tracking-tight leading-[1.05] text-foreground">
+            Artfully Uniting <br />
+            <span className="font-serif italic font-normal text-accent">Extraordinary Lives</span> <br />
+            With Exceptional Homes.
           </h1>
 
-          <p className="text-lg text-slate-400 max-w-xl font-light leading-relaxed">
-            Experience the future of property searching. Transact luxury listings, secure investments, and browse spaces mapped completely in interactive interfaces.
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl font-sans font-light leading-relaxed">
+            Explore a refined global portfolio of signature estates, glass penthouses, and historical architectural masterpieces curated for discerning collectors.
           </p>
 
-          {/* Quick HUD Specs */}
-          <div className="grid grid-cols-3 gap-4 border-t border-b border-white/10 py-6 max-w-lg">
+          {/* Quick Stats Banner */}
+          <div className="grid grid-cols-3 gap-6 border-t border-b border-border/50 py-5 max-w-lg">
             <div className="space-y-1">
-              <span className="text-xs text-slate-400 uppercase tracking-widest">Active Listings</span>
-              <div className="text-2xl font-bold font-mono">1,420+</div>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest block">Curated Listings</span>
+              <div className="text-xl md:text-2xl font-serif font-medium text-foreground">840+ Estates</div>
             </div>
             <div className="space-y-1">
-              <span className="text-xs text-slate-400 uppercase tracking-widest">Secured Sales</span>
-              <div className="text-2xl font-bold font-mono">$840M+</div>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest block">Volume Closed</span>
+              <div className="text-xl md:text-2xl font-serif font-medium text-foreground">$1.86 Billion</div>
             </div>
             <div className="space-y-1">
-              <span className="text-xs text-slate-400 uppercase tracking-widest">Global Clients</span>
-              <div className="text-2xl font-bold font-mono">8.9k+</div>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest block">Global Offices</span>
+              <div className="text-xl md:text-2xl font-serif font-medium text-foreground">12 Capitals</div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Button asChild size="lg" className="bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-black font-semibold border-none group">
-              <Link href="/buy">
-                Explore Properties
-                <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+          {/* Luxury Search Engine Bar */}
+          <form 
+            onSubmit={handleSearch}
+            className="bg-card/90 backdrop-blur-md border border-border shadow-lg p-3 rounded-2xl grid md:grid-cols-4 gap-2 items-center max-w-3xl"
+          >
+            {/* Location Input */}
+            <div className="relative flex items-center px-2 py-1 border-b md:border-b-0 md:border-r border-border/80">
+              <MapPin className="h-4 w-4 text-accent mr-2 shrink-0" />
+              <input
+                type="text"
+                placeholder="Search location..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="bg-transparent text-sm w-full outline-none text-foreground placeholder:text-muted-foreground/60"
+              />
+            </div>
+
+            {/* Type Selector */}
+            <div className="relative flex items-center px-2 py-1 border-b md:border-b-0 md:border-r border-border/80">
+              <Home className="h-4 w-4 text-accent mr-2 shrink-0" />
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                aria-label="Property Type"
+                className="bg-transparent text-sm w-full outline-none text-foreground appearance-none cursor-pointer"
+              >
+                <option value="" className="bg-card text-foreground">All Estates</option>
+                <option value="villa" className="bg-card text-foreground">Villas</option>
+                <option value="apartment" className="bg-card text-foreground">Apartments</option>
+                <option value="house" className="bg-card text-foreground">Houses</option>
+              </select>
+            </div>
+
+            {/* Price Selector */}
+            <div className="relative flex items-center px-2 py-1">
+              <DollarSign className="h-4 w-4 text-accent mr-1 shrink-0" />
+              <select
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+                aria-label="Price Range"
+                className="bg-transparent text-sm w-full outline-none text-foreground appearance-none cursor-pointer"
+              >
+                <option value="" className="bg-card text-foreground">Price Limit</option>
+                <option value="1m" className="bg-card text-foreground">Under $1,000,000</option>
+                <option value="1m-5m" className="bg-card text-foreground">$1M – $5M</option>
+                <option value="5m-10m" className="bg-card text-foreground">$5M – $10M</option>
+                <option value="10m" className="bg-card text-foreground">$10M+</option>
+              </select>
+            </div>
+
+            {/* CTA Search Button */}
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-semibold flex items-center justify-center gap-2 h-10 px-4 rounded-xl cursor-pointer"
+            >
+              <Search className="h-4 w-4 text-accent" />
+              Search
+            </Button>
+          </form>
+
+          {/* Premium CTA Buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-primary font-medium rounded-xl group px-6">
+              <Link href="/buy" className="flex items-center gap-2">
+                View Curated Portfolio
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white/20 hover:bg-white/5 text-white">
-              <Link href="/rent">Rent A Space</Link>
+            <Button asChild size="lg" variant="outline" className="border-border text-foreground hover:bg-muted rounded-xl px-6">
+              <Link href="/contact">Arrange Consultation</Link>
             </Button>
           </div>
         </div>
-
-        {/* Right Section: Interactive 3D Showcase Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="md:col-span-5 flex justify-center perspective-1000"
-        >
-          <motion.div
-            style={{
-              rotateX,
-              rotateY,
-              transformStyle: "preserve-3d",
-            }}
-            className="w-full max-w-[380px] h-[480px] bg-slate-950/60 backdrop-blur-md rounded-2xl border border-white/10 p-6 flex flex-col justify-between shadow-[0_0_50px_rgba(14,165,233,0.15)] relative overflow-hidden"
-          >
-            {/* Interactive Glow Glare Layer */}
-            <motion.div
-              style={{
-                background: useTransform(
-                  [glareX, glareY],
-                  ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(14,165,233,0.18) 0%, transparent 60%)`
-                ),
-              }}
-              className="absolute inset-0 pointer-events-none z-10"
-            />
-
-            {/* Glowing Accent Borders */}
-            <div className="absolute top-0 right-0 w-24 h-[1px] bg-gradient-to-r from-sky-400 to-transparent" />
-            <div className="absolute bottom-0 left-0 w-24 h-[1px] bg-gradient-to-r from-transparent to-cyan-400" />
-
-            {/* Card Content */}
-            <div className="space-y-4" style={{ transform: "translateZ(30px)" }}>
-              {/* Holographic Header */}
+        {/* Right Section: Interactive Villa Experience */}
+        <div className="lg:col-span-5 flex justify-center items-center w-full">
+          {InteractiveVilla ? (
+            <InteractiveVilla />
+          ) : (
+            <div className="w-full max-w-[550px] aspect-square rounded-3xl border border-border bg-card/50 shadow-2xl p-6 flex flex-col justify-between overflow-hidden relative">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-sky-400 tracking-wider flex items-center gap-1.5 bg-sky-500/10 px-2 py-0.5 rounded-md border border-sky-400/20">
-                  <Layers className="h-3 w-3 animate-spin-slow" />
-                  SPEC: PENTHOUSE_9X
+                <span className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground bg-background/80 backdrop-blur-md px-3 py-1 rounded-full border border-border/40">
+                  Interactive Villa Experience
                 </span>
-                <span className="text-xs font-mono text-slate-400">REV. 2026</span>
-              </div>
-
-              {/* Hologram Image Viewport */}
-              <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-900 border border-white/5 flex items-center justify-center">
-                {/* Simulated Wireframe Overlay */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none"
-                  style={{
-                    backgroundImage: "linear-gradient(rgba(0, 0, 0, 0) 95%, #0ea5e9 95%), linear-gradient(90deg, rgba(0, 0, 0, 0) 95%, #0ea5e9 95%)",
-                    backgroundSize: "20px 20px"
-                  }}
-                />
-                <div className="w-full h-full bg-gradient-to-tr from-sky-950/40 via-cyan-950/20 to-indigo-950/40 absolute inset-0" />
-                <span className="text-slate-400 text-xs font-mono tracking-widest relative z-10 flex flex-col items-center gap-2">
-                  <Zap className="h-5 w-5 text-sky-400 animate-bounce" />
-                  [ RENDER_IMAGE_VIEW ]
+                <span className="text-[10px] uppercase font-mono tracking-widest text-accent font-semibold bg-background/80 backdrop-blur-md px-3 py-1 rounded-full border border-border/40">
+                  Loading...
                 </span>
               </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+              </div>
             </div>
+          )}
+        </div>
 
-            {/* Card Mid: Data Readouts */}
-            <div className="space-y-3 font-mono text-xs text-slate-400 my-4" style={{ transform: "translateZ(40px)" }}>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span>ESTIMATED VALUE:</span>
-                <span className="text-white font-semibold">$3,420,000</span>
-              </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span>COMPLIANCE RATING:</span>
-                <span className="text-cyan-400 flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5" /> SECURE
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>ENERGY SCORE:</span>
-                <span className="text-sky-400 font-bold">A++ [98%]</span>
-              </div>
-            </div>
-
-            {/* Card Footer */}
-            <div style={{ transform: "translateZ(50px)" }}>
-              <Button asChild className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/25">
-                <Link href="/properties/property-1">
-                  Initialize Blueprint
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-        </motion.div>
       </div>
     </div>
   )
 }
+

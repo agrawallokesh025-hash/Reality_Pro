@@ -33,50 +33,43 @@ export default async function FavoritesPage() {
   const favoritedProperties = await getFavorites()
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white font-mono selection:bg-sky-500/30">
-      {/* Background aesthetics */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.02),transparent_60%)] pointer-events-none" />
-      <div
-        className="absolute inset-0 opacity-[0.01] pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#f43f5e 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
+    <div className="relative min-h-screen bg-background text-foreground font-sans selection:bg-accent/30 pb-20">
+      {/* Background soft glows */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(194,169,126,0.02),transparent_70%)] pointer-events-none" />
 
-      <div className="container relative z-10 max-w-6xl mx-auto px-4 py-12 space-y-10">
+      <div className="container relative z-10 max-w-6xl mx-auto px-4 py-8 space-y-10">
         {/* Navigation */}
         <div className="flex items-center">
           <Button
             variant="outline"
             size="sm"
             asChild
-            className="border-slate-800 text-slate-400 hover:text-white"
+            className="border-border text-muted-foreground hover:text-foreground rounded-xl"
           >
             <Link href="/buy" className="flex items-center gap-1.5">
-              <ArrowLeft className="h-4 w-4" />
-              BACK TO LISTINGS
+              <ArrowLeft className="h-4 w-4 text-accent" />
+              Back to listings
             </Link>
           </Button>
         </div>
 
         {/* Header */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rose-500/20 bg-rose-950/20 text-rose-400 text-xs uppercase tracking-widest">
-            <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500 animate-pulse" />
-            Personalized Wishlist
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary text-primary dark:bg-primary/30 dark:text-accent text-xs uppercase tracking-widest font-semibold">
+            <Heart className="h-3.5 w-3.5 fill-accent text-accent animate-pulse" />
+            Curated Wishlist
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-rose-100 to-slate-400 bg-clip-text text-transparent">
-            SAVED PROPERTIES
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-foreground tracking-tight leading-tight">
+            Saved Properties
           </h1>
-          <p className="text-slate-400 text-sm md:text-base font-sans leading-relaxed">
-            Monitor and access your bookmarked luxury and futuristic listings synchronized directly with your account.
+          <p className="text-muted-foreground text-sm md:text-base font-sans font-light leading-relaxed">
+            Monitor and manage your bookmarked luxury architectural landmarks synchronized directly with your account.
           </p>
         </div>
 
         {/* Listings Grid */}
         {favoritedProperties.length > 0 ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10 pt-2">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10 pt-2 justify-center">
             {favoritedProperties.map((property, idx) => {
               const propertyItem = {
                 id: property.id,
@@ -89,6 +82,8 @@ export default async function FavoritesPage() {
                 type: property.type,
                 purpose: property.purpose,
                 imageIndex: (idx % 5) + 1,
+                slug: property.slug,
+                imageUrl: property.property_images?.find((img: any) => img.is_primary)?.url || property.property_images?.[0]?.url
               }
               return (
                 <PropertyCard3D
@@ -100,15 +95,15 @@ export default async function FavoritesPage() {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-20 bg-slate-900/10 border border-slate-900 rounded-3xl p-8 max-w-xl mx-auto space-y-4">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-rose-500 border border-slate-800">
-              <Heart className="h-5 w-5 text-rose-500" />
+          <div className="text-center py-20 bg-card border border-border/60 rounded-3xl p-8 max-w-xl mx-auto space-y-4 shadow-sm">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted text-accent">
+              <Heart className="h-5 w-5" />
             </span>
-            <h3 className="text-lg font-bold text-slate-300">NO SAVED PROPERTIES</h3>
-            <p className="text-xs text-slate-500 font-sans max-w-xs mx-auto">
-              Your wishlist is currently empty. Explore our catalog of listings and tap the heart icon on any card to add it here.
+            <h3 className="text-lg font-serif font-light text-foreground">NO SAVED PROPERTIES</h3>
+            <p className="text-xs text-muted-foreground font-sans font-light max-w-xs mx-auto">
+              Your wishlist is currently empty. Explore our catalog of listings and click the heart icon on any card to add it here.
             </p>
-            <Button variant="outline" asChild size="sm" className="border-slate-800 text-slate-300">
+            <Button variant="outline" asChild size="sm" className="border-border text-foreground hover:bg-muted">
               <Link href="/buy">Browse Properties</Link>
             </Button>
           </div>

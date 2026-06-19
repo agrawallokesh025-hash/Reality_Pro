@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/static"
 import { revalidatePath } from "next/cache"
 
 async function verifyAdmin() {
@@ -27,7 +28,7 @@ async function verifyAdmin() {
 }
 
 export async function getBlogPosts(includeUnpublished = false) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   let query = supabase.from("blog_posts").select("*, users:author_id(full_name)")
 
@@ -47,7 +48,7 @@ export async function getBlogPosts(includeUnpublished = false) {
 }
 
 export async function getBlogPostBySlug(slug: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -64,7 +65,7 @@ export async function getBlogPostBySlug(slug: string) {
 }
 
 export async function getBlogPostById(id: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data, error } = await supabase
     .from("blog_posts")

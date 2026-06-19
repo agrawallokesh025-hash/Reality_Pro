@@ -4,7 +4,7 @@ import { SearchBar } from "@/components/properties/search-bar"
 import { FilterPanel } from "@/components/properties/filter-panel"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, Database } from "lucide-react"
+import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react"
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -65,48 +65,41 @@ export default async function RentPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-950 text-white font-mono selection:bg-sky-500/30">
-      {/* Visual background elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.03),transparent_60%)] pointer-events-none" />
-      <div
-        className="absolute inset-0 opacity-[0.02] pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#0ea5e9 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
-        }}
-      />
+    <div className="relative min-h-screen bg-background text-foreground font-sans selection:bg-accent/30 pb-20">
+      {/* Background Soft Glows */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(194,169,126,0.02),transparent_70%)] pointer-events-none" />
 
-      <div className="container relative z-10 max-w-6xl mx-auto px-4 py-12 md:py-20 space-y-8">
+      <div className="container relative z-10 max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-8">
         
         {/* Header Section */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-500/20 bg-sky-950/20 text-sky-400 text-xs uppercase tracking-widest">
-            <Database className="h-3.5 w-3.5 animate-pulse" />
-            Supabase Live Query Active
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary text-primary dark:bg-primary/30 dark:text-accent text-xs uppercase tracking-widest font-semibold">
+            <ShieldCheck className="h-3.5 w-3.5 text-accent animate-pulse" />
+            Curated Leasing Portfolio
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-slate-400 bg-clip-text text-transparent">
-            PROPERTIES FOR RENT
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-foreground tracking-tight leading-tight">
+            Properties For Rent
           </h1>
-          <p className="text-slate-400 text-sm md:text-base font-sans leading-relaxed">
-            Rent premium, modern spaces synced directly from our database. Filter by budget, spacing requirements, or location.
+          <p className="text-muted-foreground text-sm md:text-base font-sans font-light leading-relaxed">
+            Lease premium, modern spaces synchronized directly from our private collection. Filter by budget, spacing, or layout.
           </p>
         </div>
 
         {/* Filter Controls */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <SearchBar />
           <FilterPanel />
         </div>
 
         {/* Search results banner */}
-        <div className="flex justify-between items-center text-xs text-slate-500 uppercase tracking-widest border-b border-slate-900 pb-3">
+        <div className="flex justify-between items-center text-xs text-muted-foreground uppercase tracking-widest border-b border-border/40 pb-3">
           <span>Search Results: {totalCount} Properties Found</span>
           <span>Page {currentPage} of {totalPages || 1}</span>
         </div>
 
         {/* Properties Grid */}
         {properties.length > 0 ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10 pt-2">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10 pt-2 justify-center">
             {properties.map((property, idx) => {
               // Convert DB property structure to PropertyItem structure expected by PropertyCard3D
               const propertyItem = {
@@ -119,7 +112,9 @@ export default async function RentPage({ searchParams }: PageProps) {
                 area_sqft: property.area_sqft || 0,
                 type: property.type,
                 purpose: property.purpose,
-                imageIndex: (idx % 5) + 1, // pseudo-index for HUD visual indicators
+                imageIndex: (idx % 5) + 1,
+                slug: property.slug,
+                imageUrl: property.property_images?.find((img: any) => img.is_primary)?.url || property.property_images?.[0]?.url
               }
               return (
                 <PropertyCard3D
@@ -131,16 +126,16 @@ export default async function RentPage({ searchParams }: PageProps) {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-20 bg-slate-900/10 border border-slate-900 rounded-3xl p-8 max-w-xl mx-auto space-y-4">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-slate-500 border border-slate-800">
+          <div className="text-center py-20 bg-card border border-border/60 rounded-3xl p-8 max-w-xl mx-auto space-y-4 shadow-sm">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted text-accent font-serif text-lg border border-border">
               ?
             </span>
-            <h3 className="text-lg font-bold text-slate-300">NO RENTALS FOUND</h3>
-            <p className="text-xs text-slate-500 font-sans max-w-xs mx-auto">
+            <h3 className="text-lg font-serif font-light text-foreground">NO RENTALS FOUND</h3>
+            <p className="text-xs text-muted-foreground font-sans font-light max-w-xs mx-auto">
               No results match your criteria. Try loosening your filters or changing your location search term.
             </p>
             {activeFiltersCount(resolvedParams) > 0 && (
-              <Button variant="outline" asChild size="sm" className="border-slate-800 text-slate-300">
+              <Button variant="outline" asChild size="sm" className="border-border text-foreground hover:bg-muted">
                 <Link href="/rent">Clear All Filters</Link>
               </Button>
             )}
@@ -151,32 +146,32 @@ export default async function RentPage({ searchParams }: PageProps) {
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-6 pt-10">
             {currentPage > 1 ? (
-              <Button variant="outline" size="sm" asChild className="border-slate-800 text-slate-300">
+              <Button variant="outline" size="sm" asChild className="border-border text-foreground hover:bg-muted rounded-xl">
                 <Link href={createPageLink(currentPage - 1)} className="flex items-center gap-1.5">
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-4 w-4 text-accent" />
                   PREV
                 </Link>
               </Button>
             ) : (
-              <Button variant="outline" size="sm" disabled className="border-slate-900 text-slate-600">
+              <Button variant="outline" size="sm" disabled className="border-border/40 text-muted-foreground/40 rounded-xl">
                 <ArrowLeft className="h-4 w-4" />
                 PREV
               </Button>
             )}
 
-            <span className="text-xs text-slate-400 font-bold">
+            <span className="text-xs text-muted-foreground font-semibold">
               {currentPage} / {totalPages}
             </span>
 
             {currentPage < totalPages ? (
-              <Button variant="outline" size="sm" asChild className="border-slate-800 text-slate-300">
+              <Button variant="outline" size="sm" asChild className="border-border text-foreground hover:bg-muted rounded-xl">
                 <Link href={createPageLink(currentPage + 1)} className="flex items-center gap-1.5">
                   NEXT
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 text-accent" />
                 </Link>
               </Button>
             ) : (
-              <Button variant="outline" size="sm" disabled className="border-slate-900 text-slate-600">
+              <Button variant="outline" size="sm" disabled className="border-border/40 text-muted-foreground/40 rounded-xl">
                 NEXT
                 <ArrowRight className="h-4 w-4" />
               </Button>

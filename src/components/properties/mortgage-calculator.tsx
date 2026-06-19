@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Calculator, DollarSign, Percent, Calendar, RefreshCw } from "lucide-react"
+import { Calculator, DollarSign, Percent, Calendar } from "lucide-react"
 
 interface MortgageCalculatorProps {
   initialPrincipal?: number
@@ -52,15 +52,12 @@ export function MortgageCalculator({ initialPrincipal = 500000 }: MortgageCalcul
   }
 
   return (
-    <div className="relative group w-full bg-slate-900/40 p-6 rounded-3xl border border-slate-900 backdrop-blur-md font-mono text-xs text-slate-350">
-      {/* Outer Glow */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500/10 to-indigo-500/10 rounded-3xl blur opacity-25 group-hover:opacity-35 transition" />
-
-      <div className="relative space-y-6">
+    <div className="relative w-full bg-card p-6 rounded-2xl border border-border/60 shadow-md font-sans text-sm text-foreground">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-2 pb-2.5 border-b border-slate-850">
-          <Calculator className="h-4.5 w-4.5 text-sky-400" />
-          <h3 className="text-xs font-black uppercase text-slate-200 tracking-wider">
+        <div className="flex items-center gap-2 pb-3 border-b border-border/50">
+          <Calculator className="h-4.5 w-4.5 text-accent" />
+          <h3 className="text-xs uppercase text-foreground font-semibold tracking-wider">
             Mortgage &amp; EMI Estimator
           </h3>
         </div>
@@ -69,11 +66,11 @@ export function MortgageCalculator({ initialPrincipal = 500000 }: MortgageCalcul
         <div className="space-y-4">
           {/* Loan Amount */}
           <div className="space-y-1.5">
-            <div className="flex justify-between uppercase text-[10px] text-slate-500 font-bold">
+            <div className="flex justify-between uppercase text-[10px] text-muted-foreground font-medium">
               <span>Loan Amount</span>
-              <span className="text-sky-400 font-mono font-black">{formatCurrency(loanAmount)}</span>
+              <span className="text-accent font-semibold">{formatCurrency(loanAmount)}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center">
               <input
                 type="range"
                 min={10000}
@@ -81,18 +78,18 @@ export function MortgageCalculator({ initialPrincipal = 500000 }: MortgageCalcul
                 step={5000}
                 value={loanAmount}
                 onChange={(e) => setLoanAmount(Number(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-sky-500 outline-none"
+                className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-accent outline-none"
               />
             </div>
           </div>
 
           {/* Interest Rate */}
           <div className="space-y-1.5">
-            <div className="flex justify-between uppercase text-[10px] text-slate-500 font-bold">
+            <div className="flex justify-between uppercase text-[10px] text-muted-foreground font-medium">
               <span>Interest Rate</span>
-              <span className="text-sky-400 font-mono font-black">{interestRate.toFixed(2)}%</span>
+              <span className="text-accent font-semibold">{interestRate.toFixed(2)}%</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center">
               <input
                 type="range"
                 min={0.1}
@@ -100,29 +97,18 @@ export function MortgageCalculator({ initialPrincipal = 500000 }: MortgageCalcul
                 step={0.1}
                 value={interestRate}
                 onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-sky-500 outline-none"
+                className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-accent outline-none"
               />
             </div>
           </div>
 
           {/* Loan Tenure */}
           <div className="space-y-1.5">
-            <div className="flex justify-between uppercase text-[10px] text-slate-500 font-bold">
+            <div className="flex justify-between uppercase text-[10px] text-muted-foreground font-medium">
               <span>Tenure</span>
-              <span className="text-sky-400 font-mono font-black">{tenure} Years</span>
+              <span className="text-accent font-semibold">{tenure} Years</span>
             </div>
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min={5}
-                max={40}
-                step={5}
-                value={tenure}
-                onChange={(e) => setInterestRate(5.5)} // Reset interest if clicked? No, let's update tenure!
-                className="w-hidden" // Wait, let's keep it simple!
-                // Wait! Let's update tenure state!
-                style={{ display: "none" }} // Omit this style block
-              />
+            <div className="flex items-center">
               <input
                 type="range"
                 min={5}
@@ -130,36 +116,36 @@ export function MortgageCalculator({ initialPrincipal = 500000 }: MortgageCalcul
                 step={1}
                 value={tenure}
                 onChange={(e) => setTenure(Number(e.target.value))}
-                className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-sky-500 outline-none"
+                className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-accent outline-none"
               />
             </div>
           </div>
         </div>
 
-        {/* Results HUD */}
-        <div className="grid grid-cols-1 gap-2.5 bg-slate-950/40 p-4 rounded-2xl border border-slate-900/60 font-mono">
-          <div className="flex justify-between items-center py-1.5 border-b border-slate-900/60">
-            <span className="text-[10px] text-slate-500 uppercase font-bold flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5 text-slate-650" />
+        {/* Results */}
+        <div className="grid grid-cols-1 gap-2.5 bg-muted/30 p-4 rounded-xl border border-border/30">
+          <div className="flex justify-between items-center py-1.5 border-b border-border/40">
+            <span className="text-[10px] text-muted-foreground uppercase font-medium flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-accent" />
               Monthly Installment (EMI)
             </span>
-            <span className="text-sm font-extrabold text-emerald-400">{formatCurrency(emi)}/mo</span>
+            <span className="text-sm font-semibold text-accent">{formatCurrency(emi)}/mo</span>
           </div>
 
-          <div className="flex justify-between items-center py-1.5 border-b border-slate-900/60">
-            <span className="text-[10px] text-slate-500 uppercase font-bold flex items-center gap-1.5">
-              <Percent className="h-3.5 w-3.5 text-slate-650" />
+          <div className="flex justify-between items-center py-1.5 border-b border-border/40">
+            <span className="text-[10px] text-muted-foreground uppercase font-medium flex items-center gap-1.5">
+              <Percent className="h-3.5 w-3.5 text-accent" />
               Total Interest Paid
             </span>
-            <span className="font-extrabold text-slate-200">{formatCurrency(totalInterest)}</span>
+            <span className="font-medium text-foreground">{formatCurrency(totalInterest)}</span>
           </div>
 
           <div className="flex justify-between items-center py-1.5">
-            <span className="text-[10px] text-slate-500 uppercase font-bold flex items-center gap-1.5">
-              <DollarSign className="h-3.5 w-3.5 text-slate-650" />
+            <span className="text-[10px] text-muted-foreground uppercase font-medium flex items-center gap-1.5">
+              <DollarSign className="h-3.5 w-3.5 text-accent" />
               Total Repayment
             </span>
-            <span className="font-extrabold text-sky-400">{formatCurrency(totalRepayment)}</span>
+            <span className="font-semibold text-primary dark:text-accent-foreground">{formatCurrency(totalRepayment)}</span>
           </div>
         </div>
       </div>

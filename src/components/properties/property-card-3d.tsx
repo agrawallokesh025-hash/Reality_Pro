@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { motion, useMotionValue, useTransform } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { MapPin, BedDouble, Bath, Square, FlipHorizontal, ArrowRight, Phone } from "lucide-react"
+import Image from "next/image"
+import { MapPin, BedDouble, Bath, Square, ArrowRight } from "lucide-react"
 import { FavoriteToggle } from "@/components/properties/favorite-toggle"
 
 export interface PropertyItem {
@@ -18,6 +18,8 @@ export interface PropertyItem {
   type: string
   purpose: string
   imageIndex: number
+  slug: string
+  imageUrl?: string
 }
 
 interface PropertyCard3DProps {
@@ -25,238 +27,94 @@ interface PropertyCard3DProps {
 }
 
 export function PropertyCard3D({ property }: PropertyCard3DProps) {
-  const [isFlipped, setIsFlipped] = React.useState(false)
+  // Static premium placeholder images based on index if no real image is provided
+  const placeholderImages = [
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80",
+    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80"
+  ]
 
-  // Motion values for tracking cursor position
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-
-  // Map coordinate offset to 3D rotation angles (-15 to 15 degrees)
-  // Disabled when the card is flipped to prevent interference with the flip rotation
-  const rotateX = useTransform(y, [-150, 150], isFlipped ? [0, 0] : [15, -15])
-  const rotateYOffset = useTransform(x, [-150, 150], isFlipped ? [0, 0] : [-15, 15])
-
-  // Combine baseline flip rotation (0 or 180) with mouse hover tilt
-  const rotateY = useTransform(rotateYOffset, (val) => {
-    return isFlipped ? 180 + val : val
-  })
-
-  // Glare overlay coordinates
-  const glareX = useTransform(x, [-100, 100], [100, 0])
-  const glareY = useTransform(y, [-100, 100], [100, 0])
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (isFlipped) return
-    const rect = event.currentTarget.getBoundingClientRect()
-    const width = rect.width
-    const height = rect.height
-    // Get mouse position relative to center of the card
-    const mouseX = event.clientX - rect.left - width / 2
-    const mouseY = event.clientY - rect.top - height / 2
-    x.set(mouseX)
-    y.set(mouseY)
-  }
-
-  const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
-  }
-
-  const toggleFlip = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    // Reset mouse positions on flip
-    x.set(0)
-    y.set(0)
-    setIsFlipped(!isFlipped)
-  }
+  const displayImage = property.imageUrl || placeholderImages[(property.imageIndex - 1) % placeholderImages.length]
 
   return (
-    <div className="relative w-full max-w-[360px] h-[450px] perspective-1000 mx-auto select-none">
-      <motion.div
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        animate={{
-          rotateY: isFlipped ? 180 : 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 80,
-          damping: 15,
-        }}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
-        }}
-        className="w-full h-full relative duration-500 rounded-2xl border border-border bg-card text-card-foreground shadow-md hover:shadow-xl hover:border-white/10 dark:hover:bg-slate-900/40"
-      >
-        {/* ==================== FRONT FACE ==================== */}
-        <div
-          className="absolute inset-0 w-full h-full p-5 flex flex-col justify-between backface-hidden"
-          style={{ transform: "translateZ(0px)" }}
-        >
-          {/* Card Top: Visual Viewport */}
-          <div className="space-y-4">
-            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center border border-border/50">
-              {/* Image Placeholder with Futuristic Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-sky-950/20 via-cyan-950/10 to-indigo-950/20" />
-              <div
-                className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundImage: "radial-gradient(#0ea5e9 0.75px, transparent 0.75px)",
-                  backgroundSize: "12px 12px",
-                }}
-              />
-              <span className="text-muted-foreground text-xs font-mono tracking-widest relative z-10">
-                [ PROPERTY_IMAGE_V{property.imageIndex} ]
-              </span>
+    <div
+      className="animate-fade-in-up group relative w-full max-w-[360px] rounded-2xl bg-card border border-border/50 overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(15,44,35,0.08)] dark:hover:shadow-[0_12px_40px_rgba(212,175,55,0.05)] transition-all duration-500 flex flex-col h-[480px]"
+    >
+      {/* 80% Visual Container */}
+      <div className="relative w-full flex-1 overflow-hidden bg-muted">
+        {/* Main Image with Zoom on Hover */}
+        <Image
+          src={displayImage}
+          alt={property.title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
 
-              {/* Badges */}
-              <div className="absolute top-3 left-3 z-10 flex gap-2">
-                <span className="text-[10px] font-mono font-bold bg-sky-500 text-black px-2 py-0.5 rounded uppercase tracking-wider">
-                  {property.purpose === "buy" ? "For Sale" : "For Rent"}
-                </span>
-                {property.imageIndex % 3 === 0 && (
-                  <span className="text-[10px] font-mono font-bold bg-indigo-500 text-white px-2 py-0.5 rounded uppercase tracking-wider">
-                    Luxury
-                  </span>
-                )}
-              </div>
+        {/* Subtle Dark Vignette at Bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
 
-              {/* Favorite Toggle Overlay */}
-              <div className="absolute top-3 right-3 z-10">
-                <FavoriteToggle propertyId={property.id} />
-              </div>
-
-              {/* Flip Trigger Button */}
-              <Button
-                size="icon-xs"
-                variant="secondary"
-                onClick={toggleFlip}
-                aria-label="Flip card for blueprint details"
-                className="absolute bottom-3 right-3 z-10 bg-slate-950/60 hover:bg-slate-950/90 text-white border border-white/10 rounded-full h-8 w-8"
-              >
-                <FlipHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Title & Location */}
-            <div className="space-y-1">
-              <h3 className="font-bold text-lg leading-tight tracking-tight text-foreground line-clamp-1">
-                {property.title}
-              </h3>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-sky-400" />
-                {property.address}
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Details Grid */}
-          <div className="grid grid-cols-3 gap-2 border-t border-b border-border/60 py-3 text-xs text-muted-foreground font-mono">
-            <div className="flex flex-col items-center gap-1">
-              <BedDouble className="h-4 w-4 text-sky-400" />
-              <span>{property.bedrooms} Beds</span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Bath className="h-4 w-4 text-sky-400" />
-              <span>{property.bathrooms} Baths</span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Square className="h-3.5 w-3.5 text-sky-400" />
-              <span>{property.area_sqft} sqft</span>
-            </div>
-          </div>
-
-          {/* Card Footer: Price & Details CTA */}
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Price</span>
-              <span className="font-extrabold text-lg text-sky-400 font-mono">{property.price}</span>
-            </div>
-            <Button size="sm" asChild className="group">
-              <Link href={`/properties/property-${property.id}`}>
-                View Details
-                <ArrowRight className="h-3.5 w-3.5 ml-1 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
-          </div>
+        {/* Absolute Badges */}
+        <div className="absolute top-4 left-4 z-10 flex gap-2">
+          <span className="text-[10px] font-sans font-medium bg-primary text-primary-foreground px-3 py-1 rounded-md uppercase tracking-wider">
+            {property.purpose === "buy" ? "For Sale" : "For Rent"}
+          </span>
+          {property.type === "villa" && (
+            <span className="text-[10px] font-sans font-medium bg-accent text-accent-foreground px-3 py-1 rounded-md uppercase tracking-wider">
+              Signature
+            </span>
+          )}
         </div>
 
-        {/* ==================== BACK FACE (180deg Rotate) ==================== */}
-        <div
-          className="absolute inset-0 w-full h-full p-5 flex flex-col justify-between backface-hidden"
-          style={{ transform: "rotateY(180deg) translateZ(0px)" }}
-        >
-          {/* Card Top: Details list */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <span className="text-xs font-mono font-bold text-sky-400 uppercase tracking-widest">[ Blueprint Info ]</span>
-              <Button
-                size="icon-xs"
-                variant="secondary"
-                onClick={toggleFlip}
-                aria-label="Flip card back to blueprint image"
-                className="bg-slate-950/60 hover:bg-slate-950/90 text-white border border-white/10 rounded-full h-8 w-8"
-              >
-                <FlipHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="space-y-3 font-mono text-xs text-muted-foreground">
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>PROPERTY ID:</span>
-                <span className="text-foreground font-semibold">{property.id.toUpperCase()}</span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>SPACE TYPE:</span>
-                <span className="text-foreground font-semibold uppercase">{property.type}</span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>FURNISHING:</span>
-                <span className="text-foreground font-semibold">Semi-Furnished</span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>YEAR BUILT:</span>
-                <span className="text-foreground font-semibold">2023 (Age: 3y)</span>
-              </div>
-              <div className="flex justify-between">
-                <span>ENERGY INDEX:</span>
-                <span className="text-sky-400 font-bold">A+ [Green Certification]</span>
-              </div>
-            </div>
-
-            {/* Mock Map Preview Box */}
-            <div className="relative aspect-[2.2/1] w-full rounded-lg bg-slate-950 overflow-hidden border border-border/50 flex items-center justify-center">
-              <div
-                className="absolute inset-0 opacity-15 pointer-events-none"
-                style={{
-                  backgroundImage: "linear-gradient(rgba(14, 165, 233, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(14, 165, 233, 0.2) 1px, transparent 1px)",
-                  backgroundSize: "15px 15px",
-                }}
-              />
-              <span className="text-[10px] text-slate-400 font-mono tracking-widest uppercase">
-                [ HUD_GPS_RADAR_MAP ]
-              </span>
-            </div>
-          </div>
-
-          {/* Card Footer: Quick Actions */}
-          <div className="space-y-2">
-            <Button variant="outline" className="w-full text-xs font-mono border-sky-500/30 text-sky-400 hover:bg-sky-500/5 group" asChild>
-              <Link href={`tel:+1234567890`}>
-                <Phone className="h-3.5 w-3.5 mr-1" />
-                Initialize WhatsApp Connect
-              </Link>
-            </Button>
-            <Button className="w-full text-xs font-mono" asChild>
-              <Link href={`/properties/property-${property.id}`}>
-                Access Digital Vault &rarr;
-              </Link>
-            </Button>
-          </div>
+        {/* Favorite Toggle Button */}
+        <div className="absolute top-4 right-4 z-10">
+          <FavoriteToggle propertyId={property.id} />
         </div>
-      </motion.div>
+
+        {/* Floating Price Indicator over the image bottom */}
+        <div className="absolute bottom-4 left-4 z-10">
+          <span className="text-2xl font-serif font-medium text-white drop-shadow-md">
+            {property.price}
+          </span>
+        </div>
+      </div>
+
+      {/* 20% Info Container */}
+      <div className="p-5 flex flex-col justify-between bg-card z-10 relative">
+        <div className="space-y-1">
+          <h3 className="font-serif font-light text-xl leading-tight text-foreground group-hover:text-accent transition-colors line-clamp-1">
+            {property.title}
+          </h3>
+          <p className="text-xs text-muted-foreground flex items-center gap-1 font-sans font-light">
+            <MapPin className="h-3 w-3 text-accent shrink-0" />
+            <span className="line-clamp-1">{property.address}</span>
+          </p>
+        </div>
+
+        {/* Specifications Footer */}
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/40">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground font-sans font-light">
+            <span className="flex items-center gap-1">
+              <BedDouble className="h-3.5 w-3.5 text-accent/80" /> {property.bedrooms} Beds
+            </span>
+            <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+            <span className="flex items-center gap-1">
+              <Bath className="h-3.5 w-3.5 text-accent/80" /> {property.bathrooms} Baths
+            </span>
+            <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+            <span className="flex items-center gap-1">
+              <Square className="h-3.5 w-3.5 text-accent/80" /> {property.area_sqft} sqft
+            </span>
+          </div>
+
+          {/* Details arrow */}
+          <Link href={`/properties/${property.slug}`} className="text-accent hover:text-accent-foreground transition-colors p-1" aria-label={`View details of ${property.title}`}>
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

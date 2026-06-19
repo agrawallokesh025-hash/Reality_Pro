@@ -1,6 +1,40 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/static"
+
+const IMAGE_MAPPINGS: Record<string, string> = {
+  "villa1.jpg": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=75",
+  "penthouse1.jpg": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=75",
+  "loft1.jpg": "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=900&q=75",
+  "mansion1.jpg": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=75",
+  "smart1.jpg": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=900&q=75",
+  "studio1.jpg": "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=900&q=75",
+  "land1.jpg": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=900&q=75",
+  "suite1.jpg": "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=900&q=75",
+  "cabin1.jpg": "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=900&q=75",
+  "hub1.jpg": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=75",
+  "sunset1.jpg": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=75",
+  "condo1.jpg": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=75",
+  "quantum1.jpg": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=75",
+  "solar1.jpg": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=75",
+  "malibu1.jpg": "https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?auto=format&fit=crop&w=900&q=75"
+}
+
+function mapImageUrls(images: any[] | null | undefined): any[] {
+  if (!images) return []
+  return images.map(img => {
+    let url = img.url
+    if (url && url.includes("example.com/images/")) {
+      const filename = url.substring(url.lastIndexOf("/") + 1)
+      if (IMAGE_MAPPINGS[filename]) {
+        url = IMAGE_MAPPINGS[filename]
+      }
+    }
+    return { ...img, url }
+  })
+}
+
 
 export interface GetPropertiesFilters {
   purpose?: "buy" | "rent"
@@ -64,7 +98,7 @@ export interface PropertyWithImages {
 }
 
 export async function getProperties(filters: GetPropertiesFilters = {}) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const {
     purpose,
@@ -187,8 +221,13 @@ export async function getProperties(filters: GetPropertiesFilters = {}) {
     }
   }
 
+  const mappedProperties = (data || []).map(p => ({
+    ...p,
+    property_images: mapImageUrls(p.property_images)
+  })) as PropertyWithImages[]
+
   return {
-    properties: (data || []) as PropertyWithImages[],
+    properties: mappedProperties,
     totalCount: count || 0,
     totalPages: count ? Math.ceil(count / pageSize) : 0,
     currentPage: page,
@@ -196,25 +235,53 @@ export async function getProperties(filters: GetPropertiesFilters = {}) {
 }
 
 export async function getPropertyBySlug(slug: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
+  // 1. First attempt: Query by slug column
   const { data, error } = await supabase
     .from("properties")
     .select("*, property_images(*), users(*)")
     .eq("slug", slug)
     .single()
 
-  if (error) {
-    console.error("Error fetching property by slug:", error)
-    return null
+  if (!error && data) {
+    return {
+      ...data,
+      property_images: mapImageUrls(data.property_images)
+    } as any
   }
 
-  // Typecast to include users profile and images
-  return data as any
+  // 2. Fallback attempt: If slug lookup fails or has no rows, check if it's an ID candidate
+  let idCandidate = slug
+  if (slug.startsWith("property-")) {
+    idCandidate = slug.replace("property-", "")
+  }
+
+  // Check if idCandidate resembles a valid UUID
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (uuidRegex.test(idCandidate)) {
+    const { data: dataById, error: errorById } = await supabase
+      .from("properties")
+      .select("*, property_images(*), users(*)")
+      .eq("id", idCandidate)
+      .single()
+
+    if (!errorById && dataById) {
+      return {
+        ...dataById,
+        property_images: mapImageUrls(dataById.property_images)
+      } as any
+    }
+  }
+
+  if (error) {
+    console.error("Error fetching property by slug:", error)
+  }
+  return null
 }
 
 export async function getSimilarProperties(propertyId: string, type: string, purpose: string, limit = 3) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data, error } = await supabase
     .from("properties")
@@ -229,7 +296,10 @@ export async function getSimilarProperties(propertyId: string, type: string, pur
     return []
   }
 
-  return (data || []) as PropertyWithImages[]
+  return (data || []).map(p => ({
+    ...p,
+    property_images: mapImageUrls(p.property_images)
+  })) as PropertyWithImages[]
 }
 
 export async function createProperty(data: any, imageUrls: string[]) {
